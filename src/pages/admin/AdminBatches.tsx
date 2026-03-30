@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +59,7 @@ interface Batch {
 }
 
 export default function AdminBatches() {
+  const navigate = useNavigate();
   const { t, language, dir } = useLanguage();
   const { toast } = useToast();
   const isRTL = dir === "rtl";
@@ -486,6 +488,13 @@ export default function AdminBatches() {
                             ((batch.current_students || 0) / batch.max_students) >= 0.9 ? "text-destructive" :
                             ((batch.current_students || 0) / batch.max_students) > 0.7 ? "text-amber-500" : "text-emerald-500"
                           )}>
+                            {batch.max_students && (batch.current_students || 0) >= batch.max_students && (
+                            <Badge 
+                              className="bg-[#ff4d4f] text-white border-0 animate-badge-pulse rounded-full text-[10px] py-0 px-2"
+                            >
+                              {isRTL ? "ممتلئة" : "FULL"}
+                            </Badge>
+                          )}
                             {Math.round(((batch.current_students || 0) / batch.max_students) * 100)}%
                           </span>
                         </div>
@@ -510,33 +519,43 @@ export default function AdminBatches() {
                     )}
 
                     {/* Bottom Actions Section */}
-                    <div className="pt-4 mt-auto flex gap-3 border-t border-border/30">
+                    <div className="pt-4 mt-auto flex flex-col gap-3 border-t border-border/30">
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                          "flex-1 h-11 rounded-xl bg-blue-500/5 hover:bg-blue-500/15 text-blue-500 border border-blue-500/10 hover:border-blue-500/30 transition-all group/btn",
-                          !batch.telegram_group_link && "opacity-30 grayscale cursor-not-allowed"
-                        )}
-                        disabled={!batch.telegram_group_link}
-                        onClick={() => batch.telegram_group_link && window.open(batch.telegram_group_link, '_blank')}
+                        onClick={() => navigate(`/admin/batches/${batch.id}`)}
+                        className="w-full h-11 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold transition-all"
                       >
-                        <MessageCircle className="w-4 h-4 me-2 transition-transform group-hover/btn:scale-110" />
-                        <span className="text-xs font-bold">{t.adminBatches.telegramGroup || (isRTL ? "القروب" : "Group")}</span>
+                        <Users className="w-4 h-4 me-2" />
+                        {isRTL ? "إدارة الطلاب" : "Manage Students"}
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                          "flex-1 h-11 rounded-xl bg-purple-500/5 hover:bg-purple-500/15 text-purple-500 border border-purple-500/10 hover:border-purple-500/30 transition-all group/btn",
-                          !batch.resources_link && "opacity-30 grayscale cursor-not-allowed"
-                        )}
-                        disabled={!batch.resources_link}
-                        onClick={() => batch.resources_link && window.open(batch.resources_link, '_blank')}
-                      >
-                        <LinkIcon className="w-4 h-4 me-2 transition-transform group-hover/btn:rotate-12" />
-                        <span className="text-xs font-bold">{t.adminBatches.resources || (isRTL ? "المصادر" : "Drive")}</span>
-                      </Button>
+                      
+                      <div className="flex gap-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={cn(
+                            "flex-1 h-11 rounded-xl bg-blue-500/5 hover:bg-blue-500/15 text-blue-500 border border-blue-500/10 hover:border-blue-500/30 transition-all group/btn",
+                            !batch.telegram_group_link && "opacity-30 grayscale cursor-not-allowed"
+                          )}
+                          disabled={!batch.telegram_group_link}
+                          onClick={() => batch.telegram_group_link && window.open(batch.telegram_group_link, '_blank')}
+                        >
+                          <MessageCircle className="w-4 h-4 me-2 transition-transform group-hover/btn:scale-110" />
+                          <span className="text-xs font-bold">{t.adminBatches.telegramGroup || (isRTL ? "القروب" : "Group")}</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={cn(
+                            "flex-1 h-11 rounded-xl bg-purple-500/5 hover:bg-purple-500/15 text-purple-500 border border-purple-500/10 hover:border-purple-500/30 transition-all group/btn",
+                            !batch.resources_link && "opacity-30 grayscale cursor-not-allowed"
+                          )}
+                          disabled={!batch.resources_link}
+                          onClick={() => batch.resources_link && window.open(batch.resources_link, '_blank')}
+                        >
+                          <LinkIcon className="w-4 h-4 me-2 transition-transform group-hover/btn:rotate-12" />
+                          <span className="text-xs font-bold">{t.adminBatches.resources || (isRTL ? "المصادر" : "Drive")}</span>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>

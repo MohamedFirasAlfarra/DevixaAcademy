@@ -24,6 +24,7 @@
     --secondary-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
+    --destructive-glow: 0 0 12px rgba(255, 77, 79, 0.45);
     --muted-foreground: 215.4 16.3% 46.9%;
 
     /* Elegant Amber */

@@ -20,7 +20,9 @@ import {
     Activity,
     Users,
     Filter,
-    ArrowUpDown
+    ArrowUpDown,
+    Trash2,
+    Loader2
 } from "lucide-react";
 import {
     Dialog,
@@ -29,6 +31,16 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -64,6 +76,10 @@ export default function AdminUsers() {
         enrollments: Enrollment[];
     }>({ enrollments: [] });
     const [loadingDetails, setLoadingDetails] = useState(false);
+    
+    // Deletion State
+    const [isDeletingUser, setIsDeletingUser] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<Profile | null>(null);
 
     useEffect(() => {
         fetchUsers();
@@ -79,7 +95,6 @@ export default function AdminUsers() {
 
             if (profilesError) throw profilesError;
             
-            // Fetch all enrollments to count them manually (to avoid 400 join error)
             const { data: enrollments, error: enrollmentsError } = await supabase
                 .from('enrollments')
                 .select('user_id');
@@ -129,6 +144,40 @@ export default function AdminUsers() {
         fetchUserDetails(user.user_id);
     };
 
+    const handleDeleteUser = async () => {
+        if (!userToDelete) return;
+
+        try {
+            setIsDeletingUser(true);
+            
+            // Call the Edge Function to delete from Auth + Profiles
+            const { data, error } = await supabase.functions.invoke('delete-user', {
+                body: { userId: userToDelete.user_id }
+            });
+
+            if (error) throw error;
+
+            toast({
+                title: language === 'ar' ? 'تم الحذف بنجاح' : 'User Deleted',
+                description: language === 'ar' ? 'تم حذف المستخدم نهائياً من النظام.' : 'User has been permanently removed from the system.',
+            });
+
+            // Update local state
+            setUsers(prev => prev.filter(u => u.user_id !== userToDelete.user_id));
+            setUserToDelete(null);
+
+        } catch (error: any) {
+            console.error("Delete Error:", error);
+            toast({
+                title: t.common.error,
+                description: error.message || (language === 'ar' ? 'فشل حذف المستخدم' : 'Failed to delete user'),
+                variant: "destructive",
+            });
+        } finally {
+            setIsDeletingUser(false);
+        }
+    };
+
     const filteredUsers = users.filter(user =>
         (user.full_name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
         (user.email?.toLowerCase() || "").includes(searchQuery.toLowerCase())
@@ -153,7 +202,6 @@ export default function AdminUsers() {
     return (
         <DashboardLayout>
             <div className="space-y-8 max-w-7xl mx-auto pb-12" dir={dir}>
-                {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -190,7 +238,6 @@ export default function AdminUsers() {
                     </motion.div>
                 </div>
 
-                {/* Users List */}
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -219,7 +266,11 @@ export default function AdminUsers() {
                             <UserCard 
                                 key={user.id} 
                                 user={user} 
-                                onClick={() => handleUserClick(user)} 
+                                onClick={() => handleUserClick(user)}
+                                onDelete={(e: React.MouseEvent) => {
+                                    e.stopPropagation();
+                                    setUserToDelete(user);
+                                }}
                                 variants={itemVariants}
                                 language={language}
                                 dir={dir}
@@ -229,7 +280,37 @@ export default function AdminUsers() {
                     </motion.div>
                 )}
 
-                {/* User Details Dialog */}
+                {/* Confirm Delete Dialog */}
+                <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+                    <AlertDialogContent className="rounded-[2rem]">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle className="text-2xl font-black text-foreground">
+                                {language === 'ar' ? 'هل أنت متأكد من الحذف النهائي؟' : 'Are you absolutely sure?'}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-base font-medium">
+                                {language === 'ar' 
+                                    ? `سيتم حذف حساب "${userToDelete?.full_name}" نهائياً من نظام المصادقة ومن قاعدة البيانات. لا يمكن التراجع عن هذا الإجراء.`
+                                    : `This will permanently delete ${userToDelete?.full_name}'s account from both the Auth system and the database. This action cannot be undone.`}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="gap-3">
+                            <AlertDialogCancel className="rounded-xl border-none bg-muted hover:bg-muted/80 font-bold">
+                                {t.common.cancel}
+                            </AlertDialogCancel>
+                            <AlertDialogAction 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleDeleteUser();
+                                }}
+                                disabled={isDeletingUser}
+                                className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold px-6"
+                            >
+                                {isDeletingUser ? <Loader2 className="w-4 h-4 animate-spin" /> : (language === 'ar' ? 'حذف نهائي' : 'Delete Permanently')}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+
                 <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
                     <DialogContent className="max-w-3xl p-0 overflow-hidden border-none rounded-[2rem] shadow-2xl">
                         <div className="bg-primary h-32 relative">
@@ -319,7 +400,7 @@ export default function AdminUsers() {
     );
 }
 
-function UserCard({ user, onClick, variants, language, dir, t }: any) {
+function UserCard({ user, onClick, onDelete, variants, language, dir, t }: any) {
     const joinDate = user.created_at ? new Date(user.created_at).toLocaleDateString(language === 'ar' ? 'ar-SY' : 'en-US', {
         year: 'numeric',
         month: 'long',
@@ -339,9 +420,19 @@ function UserCard({ user, onClick, variants, language, dir, t }: any) {
                         <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                             <User className="w-8 h-8" />
                         </div>
-                        <Badge variant="outline" className="rounded-lg border-primary/20 text-primary font-bold px-3 py-1">
-                            {user.student_level || 'Beginner'}
-                        </Badge>
+                        <div className="flex gap-2">
+                             <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={onDelete}
+                                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </Button>
+                            <Badge variant="outline" className="rounded-lg border-primary/20 text-primary font-bold px-3 py-1">
+                                {user.student_level || 'Beginner'}
+                            </Badge>
+                        </div>
                     </div>
                     
                     <div>

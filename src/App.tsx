@@ -24,6 +24,7 @@ import AdminStats from "./pages/admin/AdminStats";
 import AdminOffers from "./pages/admin/AdminOffers";
 import AdminExams from "./pages/admin/AdminExams";
 import AdminLessons from "./pages/admin/AdminLessons";
+import AdminBatchDetails from "./pages/admin/AdminBatchDetails";
 import AdminPaymentSettings from "./pages/admin/AdminPaymentSettings";
 import AdminPayments from "./pages/admin/AdminPayments";
 import Offers from "./pages/Offers";
@@ -83,6 +84,7 @@ function AppRoutes() {
         <Route path="/admin/notifications" element={<ProtectedRoute adminOnly><PageTransition><AdminNotifications /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute adminOnly><PageTransition><AdminUsers /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/batches" element={<ProtectedRoute adminOnly><PageTransition><AdminBatches /></PageTransition></ProtectedRoute>} />
+        <Route path="/admin/batches/:batchId" element={<ProtectedRoute adminOnly><PageTransition><AdminBatchDetails /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/attendance" element={<ProtectedRoute adminOnly><PageTransition><AdminAttendance /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/offers" element={<ProtectedRoute adminOnly><PageTransition><AdminOffers /></PageTransition></ProtectedRoute>} />
         <Route path="/admin/exams" element={<ProtectedRoute adminOnly><PageTransition><AdminExams /></PageTransition></ProtectedRoute>} />
