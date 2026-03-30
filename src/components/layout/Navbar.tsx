@@ -84,19 +84,26 @@ export default function Navbar() {
                         <LanguageSwitcher />
                     </div>
 
-                    <div className="hidden xs:block">
+                    <div className="hidden sm:flex items-center gap-2">
                         {user ? (
                             <Link to={isAdmin ? "/admin" : "/dashboard"}>
-                                <Button variant="default" className="rounded-full px-4 md:px-6 shadow-glow gradient-primary border-none">
+                                <Button variant="default" className="rounded-full px-4 md:px-6 shadow-glow gradient-primary border-none font-bold">
                                     {t.landing.goToDashboard}
                                 </Button>
                             </Link>
                         ) : (
-                            <Link to="/auth">
-                                <Button variant="default" className="rounded-full px-4 md:px-6 shadow-glow gradient-primary border-none">
-                                    {t.common.signIn}
-                                </Button>
-                            </Link>
+                            <>
+                                <Link to="/auth">
+                                    <Button variant="ghost" className="rounded-full px-4 md:px-6 font-bold hover:bg-primary/10 hover:text-primary transition-colors">
+                                        {t.common.signIn}
+                                    </Button>
+                                </Link>
+                                <Link to="/auth?signup=true">
+                                    <Button variant="default" className="rounded-full px-4 md:px-6 shadow-glow gradient-primary border-none font-bold">
+                                        {t.common.signUp}
+                                    </Button>
+                                </Link>
+                            </>
                         )}
                     </div>
 
@@ -198,12 +205,18 @@ export default function Navbar() {
                                                 </Button>
                                             </Link>
                                         ) : (
-                                            <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                                                <Button className="w-full rounded-2xl h-20 text-2xl font-display font-black gradient-primary shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all gap-4">
-                                                    <LogIn className="w-8 h-8" />
-                                                    {t.common.signIn}
-                                                </Button>
-                                            </Link>
+                                            <div className="flex flex-col gap-4">
+                                                <Link to="/auth?signup=true" onClick={() => setMobileMenuOpen(false)}>
+                                                    <Button className="w-full rounded-2xl h-20 text-2xl font-display font-black gradient-primary shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all gap-4">
+                                                        {t.common.signUp}
+                                                    </Button>
+                                                </Link>
+                                                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                                                    <Button variant="outline" className="w-full rounded-2xl h-16 text-xl font-display font-bold border-2 hover:bg-primary/5 transition-all">
+                                                        {t.common.signIn}
+                                                    </Button>
+                                                </Link>
+                                            </div>
                                         )}
                                     </div>
                                 </motion.div>

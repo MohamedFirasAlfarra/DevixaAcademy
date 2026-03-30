@@ -106,6 +106,7 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -121,9 +122,11 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      // Check if we have a destination to return to
+      const from = (location.state as any)?.from?.pathname || "/dashboard";
+      navigate(from, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, location]);
 
   const validateForm = () => {
     try {

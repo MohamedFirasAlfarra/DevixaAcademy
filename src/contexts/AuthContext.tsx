@@ -77,8 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error("Auth initialization error:", error.message);
         // If we have a refresh token error, sign out to clear local storage
-        if (error.message.includes("Refresh Token")) {
-          supabase.auth.signOut();
+        if (error.message.includes("Refresh Token") || error.message.includes("refresh_token")) {
+          console.warn("Invalid refresh token detected, clearing session...");
+          supabase.auth.signOut({ scope: 'local' });
         }
       }
 
@@ -89,6 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fetchUserData(session.user.id);
       }
 
+      setLoading(false);
+    }).catch(err => {
+      console.error("Critical Auth Error:", err);
       setLoading(false);
     });
 

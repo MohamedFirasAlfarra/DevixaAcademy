@@ -206,7 +206,7 @@ export default function Index() {
       <Navbar />
 
       {/* Hero Slider */}
-      <section className="relative min-h-[90vh] py-16 flex items-center overflow-hidden bg-background">
+      <section className="relative min-h-[85vh] md:min-h-[90vh] py-12 md:py-16 flex items-center overflow-hidden bg-background">
         <AntigravityBackground
           count={300}
           magnetRadius={35}
@@ -238,33 +238,29 @@ export default function Index() {
 
                   <div className="space-y-8 animate-fade-in text-start">
                     <div className="flex flex-col gap-4">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-primary/20 text-primary font-bold text-sm animate-bounce w-fit shadow-glow">
-                        <Users className="w-4 h-4" />
-                        {t.landing.trusted}
-                      </div>
                       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border-accent/20 text-accent font-bold text-xs uppercase tracking-widest w-fit">
                         <Sparkles className="w-4 h-4" />
                         {t.landing.firstTwoFree}
                       </div>
                     </div>
-                    <div className="space-y-4">
-                      <h2 className="text-xl md:text-2xl font-display font-bold text-primary uppercase tracking-wider">{slide.subtitle}</h2>
-                      <h1 className="text-5xl lg:text-[5rem] font-display font-black leading-[1] tracking-tight text-foreground">
+                    <div className="space-y-4 md:space-y-6">
+                      <h2 className="text-lg md:text-2xl font-display font-bold text-primary uppercase tracking-wider">{slide.subtitle}</h2>
+                      <h1 className="text-4xl xs:text-5xl lg:text-[5rem] font-display font-black leading-[1.1] tracking-tight text-foreground">
                         {slide.title}
                       </h1>
                     </div>
                     <p className="text-xl text-muted-foreground max-w-lg leading-relaxed">
                       {slide.description}
                     </p>
-                    <div className="flex flex-wrap gap-4 pt-4">
-                      <Link to="/auth?signup=true">
-                        <Button size="lg" className="rounded-2xl px-10 text-lg h-16 shadow-glow group gradient-primary border-none text-white transition-all hover:scale-105">
+                    <div className="flex flex-col xs:flex-row gap-4 pt-4">
+                      <Link to="/auth?signup=true" className="w-full xs:w-auto">
+                        <Button size="lg" className="w-full xs:w-auto rounded-2xl px-8 md:px-10 text-lg h-14 md:h-16 shadow-glow group gradient-primary border-none text-white transition-all hover:scale-105">
                           {t.landing.registerNow}
                           <ArrowIcon className="w-5 h-5 ms-2 group-hover:translate-x-1 transition-transform" />
                         </Button>
                       </Link>
-                      <Link to="/courses">
-                        <Button size="lg" variant="outline" className="rounded-2xl px-10 text-lg h-16 glass text-foreground border-border/40 hover:bg-accent/10 transition-all hover:scale-105">
+                      <Link to="/courses" className="w-full xs:w-auto">
+                        <Button size="lg" variant="outline" className="w-full xs:w-auto rounded-2xl px-8 md:px-10 text-lg h-14 md:h-16 glass text-foreground border-border/40 hover:bg-accent/10 transition-all hover:scale-105">
                           <Play className="w-5 h-5 me-2 fill-primary text-primary" />
                           {t.landing.startLearning}
                         </Button>
@@ -272,9 +268,9 @@ export default function Index() {
                     </div>
                   </div>
 
-                  <div className="relative animate-float block">
-                    <div className="absolute -inset-10 bg-primary/20 blur-[100px] rounded-full animate-pulse" />
-                    <div className="relative rounded-[2.5rem] overflow-hidden border border-white/20 shadow-2xl glass-dark group aspect-[16/10]">
+                  <div className="relative animate-float mt-8 md:mt-0">
+                    <div className="absolute -inset-6 md:-inset-10 bg-primary/20 blur-[80px] md:blur-[100px] rounded-full animate-pulse" />
+                    <div className="relative rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-white/20 shadow-2xl glass-dark group aspect-video md:aspect-[16/10]">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
                       <img
                         src={slide.image}
@@ -527,11 +523,11 @@ export default function Index() {
 
       {/* How It Works */}
       <ScrollReveal>
-        <section className="py-32 relative overflow-hidden bg-secondary/5">
+        <section className="py-16 md:py-32 relative overflow-hidden bg-secondary/5">
           <div className="container mx-auto px-6">
-            <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-              <h2 className="text-4xl md:text-5xl font-display font-black">{t.landing.howItWorks.title}</h2>
-              <div className="h-1.5 w-24 bg-primary mx-auto rounded-full" />
+            <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20 space-y-4">
+              <h2 className="text-3xl md:text-5xl font-display font-black">{t.landing.howItWorks.title}</h2>
+              <div className="h-1.5 w-20 md:w-24 bg-primary mx-auto rounded-full" />
             </div>
             <div className="grid md:grid-cols-4 gap-8 relative">
               <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary/20 to-transparent -translate-y-1/2 -z-10" />
